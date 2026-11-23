@@ -1,0 +1,35 @@
+name: Check used games
+
+on:
+  schedule:
+    # Every 2 hours at :17 past (times are UTC). GitHub may run it a bit late.
+    - cron: "17 */2 * * *"
+  workflow_dispatch: {}   # adds a "Run workflow" button for manual runs
+
+permissions:
+  contents: write         # lets the job commit state.json / feed.xml back
+
+concurrency:
+  group: check-used-games
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check store
+        run: python3 check_restocks.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "restock-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json events.json feed.xml
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Update stock snapshot"
+            git push
+          fi
