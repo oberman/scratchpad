@@ -5,8 +5,10 @@ Watch a Shopify collection for new and restocked products, and publish an RSS fe
 Each run:
   1. Downloads every product in the collection from Shopify's public products.json.
   2. Compares it with the snapshot saved last time (state.json).
-  3. Records an event when a product is brand new and in stock, or when it flips
-     from sold out back to in stock.
+  3. Records an event when a product is brand new and in stock, or when it comes
+     back in stock. (This store removes sold-out games from the collection, so a
+     restock usually looks like a product reappearing; seen.json remembers every
+     product ever listed so those get labeled "Back in stock".)
   4. Rewrites feed.xml (RSS 2.0) from the most recent events (events.json).
 
 The first run only saves a baseline, so you don't get flooded with every game
@@ -32,6 +34,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(HERE, "state.json")
 EVENTS_FILE = os.path.join(HERE, "events.json")
 FEED_FILE = os.path.join(HERE, "feed.xml")
+SEEN_FILE = os.path.join(HERE, "seen.json")
 
 USER_AGENT = "Mozilla/5.0 (personal restock watcher; checks a few times a day)"
 
@@ -93,7 +96,7 @@ def save_json(path, data):
         f.write("\n")
 
 
-def find_events(previous, current, now_iso):
+def find_events(previous, current, seen, now_iso):
     """Return a list of new events by comparing two snapshots."""
     events = []
     for pid, prod in current.items():
@@ -101,7 +104,7 @@ def find_events(previous, current, now_iso):
             continue
         before = previous.get(pid)
         if before is None:
-            kind = "New listing"
+            kind = "Back in stock" if pid in seen else "New listing"
         elif not before["available"]:
             kind = "Back in stock"
         else:
@@ -155,6 +158,10 @@ def main():
     now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     previous = load_json(STATE_FILE, None)
     events = load_json(EVENTS_FILE, [])
+    # Every product ID ever listed -> title. Seeded from the last snapshot.
+    seen = load_json(SEEN_FILE, None)
+    if seen is None:
+        seen = {pid: p["title"] for pid, p in (previous or {}).items()}
 
     current = fetch_all_products()
     in_stock = sum(p["available"] for p in current.values())
@@ -171,13 +178,15 @@ def main():
     if previous is None:
         print("First run: saving baseline, no events recorded.")
     else:
-        new_events = find_events(previous, current, now_iso)
+        new_events = find_events(previous, current, seen, now_iso)
         for e in new_events:
             print(f"  {e['kind']}: {e['title']}")
         events = (new_events + events)[:MAX_EVENTS]
         print(f"{len(new_events)} new event(s).")
 
+    seen.update({pid: p["title"] for pid, p in current.items()})
     save_json(STATE_FILE, current)
+    save_json(SEEN_FILE, seen)
     save_json(EVENTS_FILE, events)
     with open(FEED_FILE, "w") as f:
         f.write(build_feed(events))

@@ -32,6 +32,11 @@ as a new feed item, including a second or third copy of the same game.
 - **Inactivity:** GitHub can pause scheduled workflows in a public repo after
   60 days without activity, and emails you when it does. If that happens,
   re-enable it on the Actions tab.
+- **Sold-out games:** this store removes sold-out games from the collection
+  instead of marking them sold out. `seen.json` remembers every product ever
+  listed, so when one reappears it's labeled "Back in stock" rather than
+  "New listing". (Games sold out before the first run aren't in it yet, so the
+  first restock of each of those will say "New listing".)
 - **Limits:** the store's data only says whether a game is in stock, not how
   many copies. If they get a second copy while the first is still unsold,
   nothing changes, so there's nothing to report.
