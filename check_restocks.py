@@ -140,7 +140,10 @@ def build_feed(events):
             f"   <description>{escape(desc)}</description>\n"
             "  </item>"
         )
-    now = format_datetime(datetime.now(timezone.utc))
+    # Use the newest event's time (not "now") so the feed only changes when
+    # there's something new, and the workflow only commits when stock changes.
+    last_build = (f"  <lastBuildDate>{format_datetime(datetime.fromisoformat(events[0]['time']))}"
+                  "</lastBuildDate>\n") if events else ""
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<rss version="2.0">\n'
@@ -148,7 +151,7 @@ def build_feed(events):
         f"  <title>{escape(FEED_TITLE)}</title>\n"
         f"  <link>{escape(channel_link)}</link>\n"
         "  <description>New and restocked items, checked automatically.</description>\n"
-        f"  <lastBuildDate>{now}</lastBuildDate>\n"
+        + last_build
         + ("\n".join(items) + "\n" if items else "")
         + " </channel>\n</rss>\n"
     )

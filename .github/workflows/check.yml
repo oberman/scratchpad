@@ -2,8 +2,9 @@ name: Check used games
 
 on:
   schedule:
-    # Every 2 hours at :17 past (times are UTC). GitHub may run it a bit late.
-    - cron: "17 */2 * * *"
+    # Every 15 minutes, offset from the top of the hour when GitHub is busiest.
+    # GitHub may start runs late or occasionally skip one.
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch: {}   # adds a "Run workflow" button for manual runs
 
 permissions:

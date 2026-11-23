@@ -1,6 +1,6 @@
 # Used games restock watcher
 
-Checks the Games Unlimited used-games collection every 2 hours and publishes an
+Checks the Games Unlimited used-games collection every 15 minutes and publishes an
 RSS feed of **new listings** and games that come **back in stock**.
 
 ## Setup (about 5 minutes)
