@@ -1,1 +1,24 @@
-[]
+[
+ {
+  "available": true,
+  "guid": "9622432186648-2026-11-27T22:47:18+00:00",
+  "handle": "snake-oil-used",
+  "image": "https://cdn.shopify.com/s/files/1/0273/6868/5681/files/3f78cb4dea35de8ccc2902321542e07c_860c212e-aac6-4b59-a42d-1b46323bea12.jpg?v=1769895580",
+  "kind": "New listing",
+  "price": "$9.99",
+  "product_id": "9622432186648",
+  "time": "2026-11-27T22:47:18+00:00",
+  "title": "Snake Oil USED"
+ },
+ {
+  "available": true,
+  "guid": "8975403745560-2026-11-27T22:47:18+00:00",
+  "handle": "dominion-intrigue-nocturne-used",
+  "image": "https://cdn.shopify.com/s/files/1/0273/6868/5681/files/3f78cb4dea35de8ccc2902321542e07c_e8e4b0eb-fb8d-48ff-91ba-9da633c2c189.jpg?v=1755887176",
+  "kind": "New listing",
+  "price": "$49.99",
+  "product_id": "8975403745560",
+  "time": "2026-11-27T22:47:18+00:00",
+  "title": "Dominion + Seaside + Prosperity USED"
+ }
+]
